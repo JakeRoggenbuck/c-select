@@ -1,9 +1,13 @@
 #include <ncurses.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main() {
+#define ENTER_KEY 10
+
+int select_item(char **list, int len) {
     WINDOW *w;
 
-    char list[5][7] = {"One", "Two", "Three", "Four", "Five"};
     char item[7];
     int ch, i = 0, width = 7;
 
@@ -26,8 +30,7 @@ int main() {
     keypad(w, TRUE);
     curs_set(0);
 
-    while ((ch = wgetch(w)) != 'q') {
-
+    while ((ch = wgetch(w)) != ENTER_KEY) {
         sprintf(item, "%-7s", list[i]);
         mvwprintw(w, i + 1, 2, "%s", item);
 
@@ -51,7 +54,23 @@ int main() {
     delwin(w);
     endwin();
 
-	printf("%d", i);
+    return i;
+}
 
-	return 0;
+int main() {
+    char **list = malloc(5 * sizeof(char *));
+    for (int i = 0; i < 5; ++i) {
+        list[i] = malloc(7 * sizeof(char));
+    }
+
+    const char data[5][7] = {"One", "Two", "Three", "Four", "Five"};
+
+    for (int i = 0; i < 5; ++i) {
+        strcpy(list[i], data[i]);
+    }
+
+    int i = select_item(list, 5);
+    printf("%d\n", i);
+
+    return 0;
 }
